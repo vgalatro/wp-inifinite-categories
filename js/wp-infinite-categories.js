@@ -11,8 +11,9 @@
       $(window).trigger('wic_percentage_change', {'percentage': percentage});
   });
   $(document).ready( function() {
+    var loading = false;
     $(window).on('wic_percentage_change', function (e, data) {
-      if (data.percentage > .95) {
+      if (data.percentage > .95 && loading == false) {
         /* Increment paged variable */
         if (ajax_data.query_vars.paged == 0) {
           ajax_data.query_vars.paged = 2
@@ -24,8 +25,10 @@
           'action': 'wpic_load_next_page',
           'query': ajax_data.query_vars
         };
+        loading = true;
         $.post(ajax_data.url, data, function(response) {
           $('#content').append(response);
+          loading = false;
         });
       }
     });
