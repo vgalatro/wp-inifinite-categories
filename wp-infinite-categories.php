@@ -80,6 +80,7 @@ class WP_INFINITE_SCROLL_CAT {
     }
     die();
   }
+  
   /**
    * Populates current_query_vars.
    */
