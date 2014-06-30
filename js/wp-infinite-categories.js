@@ -1,7 +1,7 @@
 (function($) {
   
   $(window).scroll(function(){
- 
+    /* Calculate percentage scrolled and then trigger event, passing the percentage */
     var top = $(window).scrollTop(), 
       docheight = $(document).height(), 
       winheight = $(window).height(),
@@ -11,8 +11,10 @@
       $(window).trigger('wic_percentage_change', {'percentage': percentage});
   });
   $(document).ready( function() {
+    /* Initialize conditional we will need later */
     var loading = false;
     $(window).on('wic_percentage_change', function (e, data) {
+      /* Only try to load when near the bottom of the page */
       if (data.percentage > .95 && loading == false) {
         /* Increment paged variable */
         if (ajax_data.query_vars.paged == 0) {
@@ -20,12 +22,14 @@
         } else {
           ajax_data.query_vars.paged += 1;
         }
-        console.dir(ajax_data);
+        /* Data for ajax call */
         var data = {
           'action': 'wpic_load_next_page',
           'query': ajax_data.query_vars
         };
+        /* Prevent race condition between waiting for request and user scrolling*/
         loading = true;
+        /* Make ajax request */
         $.post(ajax_data.url, data, function(response) {
           $('#content').append(response);
           loading = false;
