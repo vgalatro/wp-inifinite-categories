@@ -1,5 +1,5 @@
 (function($) {
-  
+
   $(window).scroll(function(){
     /* Calculate percentage scrolled and then trigger event, passing the percentage */
     var top = $(window).scrollTop(), 
@@ -13,9 +13,10 @@
   $(document).ready( function() {
     /* Initialize conditional we will need later */
     var loading = false;
+    var current_page_title = $(document).find("title").text();
     $(window).on('wic_percentage_change', function (e, data) {
       /* Only try to load when near the bottom of the page */
-      if (data.percentage > .95 && loading == false) {
+      if (data.percentage > .99 && loading == false) {
         /* Increment paged variable */
         if (ajax_data.query_vars.paged == 0) {
           ajax_data.query_vars.paged = 2
@@ -31,8 +32,11 @@
         loading = true;
         /* Make ajax request */
         $.post(ajax_data.url, data, function(response) {
-          $(response).appendTo('.wp_inf_scrl_init').hide().fadeIn(2000);
-          loading = false;
+          if (response) {
+            $(response).appendTo('.wp_inf_scrl_init').hide().fadeIn(2000);
+            loading = false;
+            History.pushState({page: ajax_data.query_vars.paged}, current_page_title + ' | Page ' + ajax_data.query_vars.paged, '?ipage=' + ajax_data.query_vars.paged);
+          }
         });
       }
     });

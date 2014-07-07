@@ -31,22 +31,11 @@ class WP_INFINITE_SCROLL_CAT {
    * @see function parse_query
    */
   private $current_query_vars;
-  
-  /**
-   * Gets singleton instance of the class.
-   */
-  public function get_instance() {
-    static $instance = null;
-    if ($instance === null) {
-      $instance = new WP_INFINITE_SCROLL_CAT();
-    }
-    return $instance;
-  }
-  
+
   /**
    * Constucts class and adds plugin's WP action hook callbacks.
    */
-  private function __construct() {
+  public function __construct() {
     add_action('wp_enqueue_scripts', array(&$this, 'enqueue_scripts'));
     add_action('wp_ajax_wpic_load_next_page', array(&$this, 'ajax_callback'));
     add_action('wp_ajax_nopriv_wpic_load_next_page', array(&$this, 'ajax_callback'));
@@ -57,14 +46,29 @@ class WP_INFINITE_SCROLL_CAT {
    * Enqueues plugin's javascript file so it is included on the page.
    */
   public function enqueue_scripts() {
-    wp_register_script('wp_infinite_categories', plugins_url('js/wp-infinite-categories.js', __FILE__), array('jquery'));
+    wp_register_script(
+      'wp_i_c_history_js',
+      plugins_url('js/jquery.history.js', __FILE__),
+      array('jquery'),
+      '',
+      true);
+    wp_register_script(
+      'wp_infinite_categories',
+      plugins_url('js/wp-infinite-categories.js', __FILE__),
+      array('wp_i_c_history_js'),
+      '',
+      true);
+    wp_enqueue_script('wp_i_c_history_js');
     wp_enqueue_script('wp_infinite_categories');
     
     // Passes admin-ajax url and current_query_vars to the javascipt file.
-    wp_localize_script('wp_infinite_categories', 'ajax_data', array(
-      'url' => admin_url('admin-ajax.php'),
-      'query_vars' => $this->current_query_vars,
-    ));
+    wp_localize_script(
+      'wp_infinite_categories',
+      'ajax_data',
+      array(
+        'url' => admin_url('admin-ajax.php'),
+        'query_vars' => $this->current_query_vars,
+      ));
   }
   
   /**
@@ -87,9 +91,9 @@ class WP_INFINITE_SCROLL_CAT {
   public function parse_query($query) {
     $this->current_query_vars = $query->query_vars;
   }
-  
+
 }
 
 //INSTANTIATE!
-WP_INFINITE_SCROLL_CAT::get_instance();
+new WP_INFINITE_SCROLL_CAT();
 
