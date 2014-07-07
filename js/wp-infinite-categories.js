@@ -31,7 +31,7 @@
         loading = true;
         /* Make ajax request */
         $.post(ajax_data.url, data, function(response) {
-          $('#content').append(response);
+          $(response).appendTo('.wp_inf_scrl_init').hide().fadeIn(2000);
           loading = false;
         });
       }
